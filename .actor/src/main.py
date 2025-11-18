@@ -86,7 +86,7 @@ def ledger_invoice_key(row: Dict[str, Any]) -> str:
     """
     Extract an invoice reference from the ledger / master financials.
 
-    Typical Master_Financials headers (from your 2016 example):
+    Typical Master_Financials headers:
     - Invoice Number
     - Invoice number
     - Invoice
@@ -102,7 +102,7 @@ def invoice_guid_key(row: Dict[str, Any]) -> str:
     """
     Extract the Xero invoice GUID from the Invoice Master / Enriched files.
 
-    Common header names (from your invoice/enriched masters):
+    Common header names:
     - Invoice ID
     - InvoiceId
     - Invoice_GUID
@@ -267,8 +267,12 @@ async def main() -> None:
             inv_date = norm(first_inv.get("Date"))
             inv_type = norm(first_inv.get("Type"))
             inv_currency = norm(first_inv.get("Currency"))
-            inv_line_total = sum_field(inv_rows, ["Line amount", "Line Amount", "Line total", "Line Total"])
-            inv_tax_total = sum_field(inv_rows, ["Tax amount", "Tax Amount", "GST", "GST (AUD)"])
+            inv_line_total = sum_field(
+                inv_rows, ["Line amount", "Line Amount", "Line total", "Line Total"]
+            )
+            inv_tax_total = sum_field(
+                inv_rows, ["Tax amount", "Tax Amount", "GST", "GST (AUD)"]
+            )
 
             # Ledger rows for this invoice (join via invoice number)
             ledger_rows_for_invoice = ledger_by_invnum.get(inv_num, []) if inv_num else []
@@ -442,3 +446,10 @@ async def main() -> None:
             f"ledger_only_invnums={len(ledger_only_invnums)}, "
             f"kv_file={kv_filename}"
         )
+
+
+# -------- entrypoint --------
+
+if __name__ == "__main__":
+    import asyncio
+    asyncio.run(main())
